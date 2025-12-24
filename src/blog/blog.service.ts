@@ -47,11 +47,19 @@ export class BlogService {
 
     //endregion
 
-
     //region✅ update blog
-    update(id: string, updateBlog: UpdateBlogDto) {
-        return this.blogModel.findByIdAndUpdate({_id: id, updateBlog});
+    async update(id: string, updateBlog: UpdateBlogDto) {
+        const updated = await this.blogModel.findByIdAndUpdate(
+            id,
+            updateBlog,
+            { new: true }
+        );
 
+        if (!updated) {
+            throw new NotFoundException(`Blog with id ${id} not found`);
+        }
+
+        return updated;
     }
 
     //endregion
