@@ -1,70 +1,60 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {createBlogDto} from "./dtos/createBlogDto";
 import {UpdateBlogDto} from "./dtos/updateBlogDto";
-import {IBlog} from "./entities/blogIntity";
+import {Blog} from "./schemas/blog.schema";
+import {Model} from "mongoose";
+import {InjectModel} from "@nestjs/mongoose";
 
 @Injectable()
 export class BlogService {
 
-    private blogs : IBlog[] = [
-        {
-            _id:"1",
-            title: "title 1",
-            content: "content 1"
-        },
-        {
-            _id:"2",
-            title: "title 2",
-            content: "content 2"
-        }
-    ];
-
-    findAll(){
-        return this.blogs;
+    constructor(@InjectModel(Blog.name) private readonly blogModel: Model<Blog>) {
     }
 
-    findOne(id:string){
-        const blog = this.blogs.find(b => b._id === id);
-        if(blog){
+    //region✅ get all blogs or find by query
+    async findAll() {
+        return await this.blogModel.find().exec();
+    }
+
+    //endregion
+
+    //region✅ find blog by ID
+    async findOne(id: string) {
+        const blog = await this.blogModel.findOne({_id: id});
+        if (blog) {
             return blog;
-        }else {
+        } else {
             throw new NotFoundException();
         }
     }
 
-    create(blog: createBlogDto) {
-        const newBlog = {
-            _id: String(this.blogs.length + 1),
-            // OR use: _id: Date.now().toString(), // Timestamp-based ID
-            ...blog
-        };
-        this.blogs.push(newBlog);
+    //endregion
+
+    //region✅ create new blog
+    async create(blog: createBlogDto) {
+
+        const newBlog = new this.blogModel(blog);
+        await newBlog.save();
         return newBlog;
     }
 
-    delete(id:string){
-        const blog = this.blogs.find(b => b._id === id);
-        if(blog){
-            return this.blogs.filter(b => b._id === id);
-        }else {
-            throw new NotFoundException();
-        }
+    //endregion
+
+    //region✅ delete blog
+    delete(id: string) {
+        return this.blogModel.findByIdAndDelete({_id: id});
     }
 
+    //endregion
 
+
+    //region✅ update blog
     update(id: string, updateBlog: UpdateBlogDto) {
-        const blogIndex = this.blogs.findIndex(b => b._id === id);
-        
-        if (blogIndex !== -1) {
-            this.blogs[blogIndex] = {
-                ...this.blogs[blogIndex],
-                ...updateBlog
-            };
-            return this.blogs[blogIndex];
-        } else {
-            throw new NotFoundException(`Blog with id ${id} not found`);
-        }
+        return this.blogModel.findByIdAndUpdate({_id: id, updateBlog});
+
     }
+
+    //endregion
 
 
 }

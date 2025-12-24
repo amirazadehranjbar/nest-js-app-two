@@ -10,34 +10,46 @@ export class BlogController {
     constructor(private readonly blogService: BlogService) {}
 
     @ApiTags('Blog')
+
+    //region✅ get all blogs
     @Get('all')
     findAll(@Query() query) {
-        return "find all posts";
+        return this.blogService.findAll();
     }
+    //endregion
 
+    //region✅ create new blog
     @Post('create')
     create(@Body() body:createBlogDto){
         return this.blogService.create(body);
     }
+    //endregion
 
+    //region✅ find by category
     @Get('categories')
     findAllCategories() {
-        return "find all categories";
+        return this.blogService.findAll();
     }
+    //endregion
 
-
+    //region✅ find by id
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return `find one ${id}`;
+        return this.blogService.findOne(id);
     }
+    //endregion
 
+    //region✅ update blog
     @Put('update/:id')
     update(@Param('id') id: string, @Body() body: UpdateBlogDto) {
         return this.blogService.update(id, body);
     }
+    //endregion
 
+    //region✅ delete blog
     @Delete(':id')
     delete(@Param('id') id: string) {
-        return "Deletefrom blogs";
+        return this.blogService.delete(id);
     }
+    //endregion
 }
