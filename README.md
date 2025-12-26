@@ -297,9 +297,9 @@ This project is open source and available under the [MIT License](LICENSE).
 
 If you have any questions about this learning project, feel free to reach out!
 
-- 💼 [LinkedIn](#) - Add your LinkedIn
-- 🐱 [GitHub](#) - Add your GitHub profile
-- 📧 [Email](#) - Add your email
+- 💼 [LinkedIn](#) - https://www.linkedin.com/in/amir-azadeh-ranjbar-2a1ba5205/overlay/about-this-profile/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base%3BccDVmJr4ShqkP%2FbYeMC5SQ%3D%3D
+- 🐱 [GitHub](#) - https://github.com/amirazadehranjbar
+- 📧 [Email](#) - amirazadehranjbar@gmail.com
 
 ---
 
