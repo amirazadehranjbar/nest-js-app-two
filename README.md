@@ -191,6 +191,201 @@ src/
 
 ---
 
+## 📊 Application Flows
+
+### 🔄 Blog CRUD Flow
+
+```mermaid
+graph TD
+    A[Client Request] --> B{Request Type?}
+    B -->|GET /blog/all| C[Retrieve All Blogs]
+    B -->|GET /blog/:id| D[Find Blog by ID]
+    B -->|POST /blog/create| E[Validate DTO]
+    B -->|PUT /blog/update/:id| F[Validate Update DTO]
+    B -->|DELETE /blog/:id| G[Delete Blog]
+    
+    C --> H[Apply Filters & Pagination]
+    H --> I[Return Blog List]
+    
+    D --> J{Blog Exists?}
+    J -->|Yes| K[Return Blog]
+    J -->|No| L[404 Not Found]
+    
+    E --> M{Valid Data?}
+    M -->|Yes| N[Save to MongoDB]
+    M -->|No| O[400 Bad Request]
+    N --> P[Return Created Blog]
+    
+    F --> Q{Blog Exists?}
+    Q -->|Yes| R[Update Blog]
+    Q -->|No| L
+    R --> S[Return Updated Blog]
+    
+    G --> T{Blog Exists?}
+    T -->|Yes| U[Delete from MongoDB]
+    T -->|No| L
+    U --> V[Return Success]
+```
+
+---
+
+### 📁 File Upload Flow
+
+```mermaid
+graph TD
+    A[User Uploads File] --> B[Multer Intercepts]
+    B --> C{File Provided?}
+    C -->|No| D[400: No File Uploaded]
+    C -->|Yes| E{Valid Type?}
+    
+    E -->|No| F[400: Invalid File Type]
+    E -->|Yes| G{Size < 5MB?}
+    
+    G -->|No| H[400: File Too Large]
+    G -->|Yes| I[Save to /uploads/]
+    
+    I --> J[Generate Unique Filename]
+    J --> K[Store in Filesystem]
+    K --> L[Return File Path]
+```
+
+---
+
+### 🏷️ Category Management Flow
+
+```mermaid
+graph TD
+    A[Category Request] --> B{Action?}
+    B -->|Create| C[Validate Category DTO]
+    B -->|Update| D[Find Category by ID]
+    B -->|Delete| E[Find Category by ID]
+    B -->|Get All| F[Fetch Categories]
+    
+    C --> G{Valid?}
+    G -->|Yes| H[Save Category]
+    G -->|No| I[400 Bad Request]
+    H --> J[Return Created Category]
+    
+    D --> K{Exists?}
+    K -->|Yes| L[Update Category]
+    K -->|No| M[404 Not Found]
+    L --> N[Return Updated Category]
+    
+    E --> O{Exists?}
+    O -->|Yes| P[Delete Category]
+    O -->|No| M
+    P --> Q[Return Success]
+    
+    F --> R[Return All Categories]
+```
+
+---
+
+### 🔐 Request Validation Flow
+
+```mermaid
+graph LR
+    A[Incoming Request] --> B[ValidationPipe]
+    B --> C{DTO Valid?}
+    C -->|Yes| D[Controller]
+    C -->|No| E[400 Bad Request]
+    
+    D --> F[Service Layer]
+    F --> G{Business Logic Valid?}
+    G -->|Yes| H[MongoDB Operation]
+    G -->|No| I[Custom Error]
+    
+    H --> J{Operation Success?}
+    J -->|Yes| K[Return Response]
+    J -->|No| L[500 Server Error]
+```
+
+---
+
+### 🗄️ Database Schema Relationships
+
+```mermaid
+erDiagram
+    Blog ||--o{ BlogCategory : belongs_to
+    Blog {
+        ObjectId _id
+        String title
+        String content
+        ObjectId category
+        Date createdAt
+        Date updatedAt
+    }
+    BlogCategory {
+        ObjectId _id
+        String name
+        String icon
+        Date createdAt
+        Date updatedAt
+    }
+```
+
+---
+
+### 🌐 API Request Lifecycle
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Controller
+    participant ValidationPipe
+    participant Service
+    participant MongoDB
+    
+    Client->>Controller: HTTP Request
+    Controller->>ValidationPipe: Validate DTO
+    
+    alt Validation Fails
+        ValidationPipe-->>Client: 400 Bad Request
+    else Validation Success
+        ValidationPipe->>Controller: Valid Data
+        Controller->>Service: Business Logic
+        Service->>MongoDB: Database Query
+        MongoDB-->>Service: Query Result
+        Service-->>Controller: Processed Data
+        Controller-->>Client: HTTP Response
+    end
+```
+
+---
+
+### 🔄 Blog Creation with Category
+
+```mermaid
+graph TD
+    A[POST /blog/create] --> B[Validate Blog DTO]
+    B --> C{Category ID Valid?}
+    C -->|No| D[400: Invalid Category]
+    C -->|Yes| E{Category Exists?}
+    E -->|No| F[404: Category Not Found]
+    E -->|Yes| G[Create Blog Document]
+    G --> H[Link to Category]
+    H --> I[Save to MongoDB]
+    I --> J[Return Blog with Category]
+```
+
+---
+
+### 📊 Pagination & Filtering Flow
+
+```mermaid
+graph LR
+    A[GET /blog/all?page=1&title=nest] --> B[Parse Query Params]
+    B --> C[Build MongoDB Query]
+    C --> D[Apply Title Filter]
+    D --> E[Apply Sort]
+    E --> F[Apply Pagination]
+    F --> G[Count Total Documents]
+    G --> H[Execute Query]
+    H --> I[Return: counts + blogs]
+```
+
+---
+
 ## 📋 Example Requests
 
 ### Create a Blog Post
