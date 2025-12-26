@@ -4,6 +4,7 @@ import {UpdateBlogDto} from "./dtos/updateBlogDto";
 import {Blog} from "./schemas/blog.schema";
 import {Model} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";
+import {BlogQueryDto} from "./dtos/blogQuery.dto";
 
 @Injectable()
 export class BlogService {
@@ -12,8 +13,41 @@ export class BlogService {
     }
 
     //region✅ get all blogs or find by query
-    async findAll() {
-        return await this.blogModel.find().exec();
+    async findAll(queryParams: BlogQueryDto) {
+        let {page = 1, pageSize, title, sort} = queryParams;
+
+        const query: any = {};
+        if (title) {
+            query.title = {$regex: title, $options: "i"};
+        }
+
+        let sortObject: any = {};
+
+        if (sort) {
+            switch (sort) {
+                case 'createdAt':
+                    sortObject = {"createdAt": -1};
+                    break;
+                case 'updatedAt':
+                    sortObject = {"updatedAt": -1};
+                    break;
+
+            }
+        }
+
+
+        const counts = await this.blogModel.countDocuments(query);
+        const blogs = await this.blogModel
+            .find(query)
+            .populate('category')
+            .skip(page - 1)
+            .sort(sortObject)
+            .select({__v:0})
+            .limit(pageSize ?? counts)
+            .exec()
+
+
+        return {counts, blogs};
     }
 
     //endregion
@@ -52,7 +86,7 @@ export class BlogService {
         const updated = await this.blogModel.findByIdAndUpdate(
             id,
             updateBlog,
-            { new: true }
+            {new: true}
         );
 
         if (!updated) {

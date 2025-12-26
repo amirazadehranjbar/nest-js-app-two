@@ -3,6 +3,7 @@ import {ApiTags} from "@nestjs/swagger";
 import {createBlogDto} from "./dtos/createBlogDto";
 import {UpdateBlogDto} from "./dtos/updateBlogDto";
 import {BlogService} from "./blog.service";
+import {BlogQueryDto} from "./dtos/blogQuery.dto";
 
 @Controller('blog')
 export class BlogController {
@@ -13,8 +14,8 @@ export class BlogController {
 
     //region✅ get all blogs
     @Get('all')
-    findAll(@Query() query) {
-        return this.blogService.findAll();
+    findAll(@Query() queryParams : BlogQueryDto) {
+        return this.blogService.findAll(queryParams);
     }
     //endregion
 
@@ -22,13 +23,6 @@ export class BlogController {
     @Post('create')
     create(@Body() body:createBlogDto){
         return this.blogService.create(body);
-    }
-    //endregion
-
-    //region✅ find by category
-    @Get('categories')
-    findAllCategories() {
-        return this.blogService.findAll();
     }
     //endregion
 

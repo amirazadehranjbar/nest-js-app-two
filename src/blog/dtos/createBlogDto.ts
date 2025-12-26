@@ -1,15 +1,24 @@
-import {IsNotEmpty, IsOptional, IsString} from "class-validator";
+import {IsMongoId, IsNotEmpty, IsString} from "class-validator";
 import {ApiProperty} from "@nestjs/swagger";
+
+
 
 export class createBlogDto {
 
-    @ApiProperty({ example: 'My Blog Title' })
+    @ApiProperty()
     @IsNotEmpty()
     @IsString()
     title: string;
 
-    @ApiProperty({ example: 'My Blog Content' })
+    @ApiProperty()
     @IsNotEmpty()
     @IsString()
     content: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsMongoId()
+    category: string;
+
+
 }
