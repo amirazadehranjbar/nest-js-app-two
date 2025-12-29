@@ -15,7 +15,9 @@ async function bootstrap() {
         }));
 
     const config = new DocumentBuilder().setTitle('nest application').build();
+
     const document = SwaggerModule.createDocument(app, config);
+
     SwaggerModule.setup("/document", app, document);
 
     await app.listen(process.env.PORT ?? 3000);
