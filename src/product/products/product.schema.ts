@@ -15,7 +15,7 @@ export class Product {
     @Prop([String])
     images: string[];
 
-    @Prop({required: true, ref: "Category", type: mongoose.Schema.Types.ObjectId})
+    @Prop({required: true, ref: ProductCategory.name, type: mongoose.Schema.Types.ObjectId})
     category: ProductCategory;
 
 
